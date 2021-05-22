@@ -5,15 +5,17 @@ contract Election {
     string public candidate;
 
     struct Candidate {
-        uint id;
+        uint256 id;
         string name;
-        uint voteCount;
+        uint256 voteCount;
     }
 
-    mapping(uint => Candidate) public candidates;
+    mapping(uint256 => Candidate) public candidates;
     mapping(address => bool) public voters;
 
-    uint public candidatesCount;
+    uint256 public candidatesCount;
+
+    event votedEvent(uint256 indexed _candidateId);
 
     // Constructor
     constructor() public {
@@ -22,11 +24,11 @@ contract Election {
     }
 
     function addCandidate(string memory _name) private {
-        candidatesCount ++;
+        candidatesCount++;
         candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
     }
 
-    function vote (uint _candidateId) public {
+    function vote(uint256 _candidateId) public {
         // require that they haven't voted before
         require(!voters[msg.sender]);
 
@@ -37,6 +39,9 @@ contract Election {
         voters[msg.sender] = true;
 
         // update candidate vote Count
-        candidates[_candidateId].voteCount ++;
+        candidates[_candidateId].voteCount++;
+
+        // trigger voted event
+        votedEvent(_candidateId);
     }
 }
